@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
+<meta name="color-scheme" content="light only">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Una sorpresa para ti</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,25 +15,10 @@
     --accent:#7FA9EC; --accent-ink:#FFFFFF; --ring:rgba(127,169,236,.45);
     --stem:#9FCFB8; --leaf:#BFE3D0;
     --card:#FBFDFF; --card-line:rgba(127,169,236,.35); --key:#EEF4FF; --bad:#E58AA6; --good:#6FBF9E;
+    color-scheme:light only;
     box-sizing:border-box;
     padding-top:env(safe-area-inset-top,0px);
     padding-bottom:env(safe-area-inset-bottom,0px);
-  }
-  @media (prefers-color-scheme: dark){
-    :root:not([data-theme="light"]){
-      color-scheme:dark;
-      --bg:#141E36; --bg2:#1D2B4C; --ink:#E4EDFF; --muted:#A8BCE2;
-      --accent:#9CC0F5; --accent-ink:#141E36; --ring:rgba(156,192,245,.4);
-      --stem:#6FA48C; --leaf:#5E907A;
-      --card:#1F2E52; --card-line:rgba(156,192,245,.3); --key:#2A3C66; --bad:#F2A3BC; --good:#8FD6B8;
-    }
-  }
-  :root[data-theme="dark"]{
-    color-scheme:dark;
-    --bg:#141E36; --bg2:#1D2B4C; --ink:#E4EDFF; --muted:#A8BCE2;
-    --accent:#9CC0F5; --accent-ink:#141E36; --ring:rgba(156,192,245,.4);
-    --stem:#6FA48C; --leaf:#5E907A;
-      --card:#1F2E52; --card-line:rgba(156,192,245,.3); --key:#2A3C66; --bad:#F2A3BC; --good:#8FD6B8;
   }
   *,*::before,*::after{box-sizing:inherit}
   html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
@@ -562,7 +548,7 @@ function drawBono(revealed) {
   c.fillStyle = "rgba(255,255,255,.75)"; roundRect(c, 105, 795, 690, 100, 26); c.fill();
   c.strokeStyle = "rgba(127,169,236,.45)"; c.lineWidth = 2; c.stroke();
   if (revealed) {
-    value(c, "POR DEFINIR", 140, 864);
+    value(c, "MUCHA PLATA", 140, 864);
   } else {
     c.textAlign = "left"; c.fillStyle = "#2E4A7D"; c.font = '64px "Young Serif", Georgia, serif';
     if ("letterSpacing" in c) c.letterSpacing = "14px";
@@ -821,7 +807,7 @@ eyeBtn.addEventListener("click", () => {
   revealed = !revealed;
   bonoImg.src = (revealed ? canvases.bonoShown : canvases.bonoHidden).toDataURL("image/png");
   bonoImg.alt = revealed
-    ? "Bono válido para irte de compras. Monto: por definir. Lugar: donde tú quieras."
+    ? "Bono válido para irte de compras. Monto: mucha plata. Lugar: donde tú quieras."
     : "Bono válido para irte de compras. Monto oculto. Lugar: donde tú quieras.";
   eyeBtn.innerHTML = revealed ? EYE_OFF : EYE_OPEN;
   eyeBtn.setAttribute("aria-pressed", String(revealed));
