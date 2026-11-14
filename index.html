@@ -13,6 +13,7 @@
     --bg:#E6F0FF; --bg2:#F7FAFF; --ink:#2E4A7D; --muted:#5D7299;
     --accent:#7FA9EC; --accent-ink:#FFFFFF; --ring:rgba(127,169,236,.45);
     --stem:#9FCFB8; --leaf:#BFE3D0;
+    --card:#FBFDFF; --card-line:rgba(127,169,236,.35); --key:#EEF4FF; --bad:#E58AA6; --good:#6FBF9E;
     box-sizing:border-box;
     padding-top:env(safe-area-inset-top,0px);
     padding-bottom:env(safe-area-inset-bottom,0px);
@@ -23,6 +24,7 @@
       --bg:#141E36; --bg2:#1D2B4C; --ink:#E4EDFF; --muted:#A8BCE2;
       --accent:#9CC0F5; --accent-ink:#141E36; --ring:rgba(156,192,245,.4);
       --stem:#6FA48C; --leaf:#5E907A;
+      --card:#1F2E52; --card-line:rgba(156,192,245,.3); --key:#2A3C66; --bad:#F2A3BC; --good:#8FD6B8;
     }
   }
   :root[data-theme="dark"]{
@@ -30,6 +32,7 @@
     --bg:#141E36; --bg2:#1D2B4C; --ink:#E4EDFF; --muted:#A8BCE2;
     --accent:#9CC0F5; --accent-ink:#141E36; --ring:rgba(156,192,245,.4);
     --stem:#6FA48C; --leaf:#5E907A;
+      --card:#1F2E52; --card-line:rgba(156,192,245,.3); --key:#2A3C66; --bad:#F2A3BC; --good:#8FD6B8;
   }
   *,*::before,*::after{box-sizing:inherit}
   html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
@@ -72,6 +75,8 @@
   .hero.leaving{opacity:0;transform:translateY(-24px) scale(.97)}
   .hero h1{font-family:"Fraunces",Georgia,serif;font-style:italic;font-weight:300;
            font-size:clamp(2.6rem,9vw,4.6rem);line-height:1.02;margin:0 0 .4em;letter-spacing:-.01em}
+  .hero .love{font-family:"Pinyon Script",cursive;font-size:clamp(2.2rem,8vw,3.2rem);
+              color:var(--accent);margin:0 0 .1em;line-height:1}
   .hero p{font-size:1.1rem;color:var(--muted);margin:0 auto 2.2rem;max-width:26ch;line-height:1.5}
 
   .btn{font:inherit;font-weight:500;font-size:1.05rem;border:0;cursor:pointer;
@@ -141,6 +146,65 @@
   .btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 2px var(--accent)}
   .status{min-height:1.4em;margin:0;font-size:.95rem;color:var(--muted);text-align:center;max-width:30ch}
 
+
+  /* ---------- Modal con slides ---------- */
+  .modal{position:fixed;inset:0;z-index:10;display:grid;place-items:center;
+         padding:calc(20px + env(safe-area-inset-top,0px)) 18px calc(20px + env(safe-area-inset-bottom,0px));
+         background:rgba(30,48,90,.32);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+         opacity:0;visibility:hidden;transition:opacity .35s ease,visibility 0s linear .35s}
+  .modal.open{opacity:1;visibility:visible;transition:opacity .35s ease}
+  .card{position:relative;width:min(420px,100%);max-height:100%;overflow:auto;
+        background:var(--card);color:var(--ink);border-radius:30px;padding:34px 24px 24px;
+        box-shadow:0 30px 70px rgba(30,48,90,.35), inset 0 0 0 1.5px var(--card-line);
+        transform:translateY(40px) scale(.94);transition:transform .5s cubic-bezier(.2,.9,.25,1.12)}
+  .modal.open .card{transform:none}
+  .card.shake{animation:shake .45s ease}
+  @keyframes shake{20%,60%{transform:translateX(-10px)}40%,80%{transform:translateX(10px)}}
+  .corner{position:absolute;width:96px;height:96px;pointer-events:none}
+  .corner.tl{top:-14px;left:-14px}
+  .corner.br{bottom:-14px;right:-14px;transform:rotate(180deg)}
+  .close{position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;border:0;
+         background:transparent;color:var(--muted);font-size:1.5rem;line-height:1;cursor:pointer;z-index:2}
+  .close:focus-visible{outline:2px solid var(--ink)}
+  .mdots{display:flex;gap:6px;justify-content:center;margin-bottom:18px}
+  .mdot{width:7px;height:7px;border-radius:999px;background:var(--muted);opacity:.3;transition:all .3s ease}
+  .mdot.on{width:20px;opacity:1;background:var(--accent)}
+
+  .slides{display:grid}
+  .slide{grid-area:1/1;display:flex;flex-direction:column;align-items:center;text-align:center;
+         transition:opacity .45s ease,transform .45s ease,visibility 0s}
+  .slide:not(.active){opacity:0;transform:translateX(40px);visibility:hidden;pointer-events:none;
+                      transition:opacity .3s ease,transform .3s ease,visibility 0s linear .3s}
+  .slide.gone{transform:translateX(-40px)}
+  .slide h3{font-family:"Pinyon Script",cursive;font-weight:400;font-size:2.6rem;margin:0 0 .3em;line-height:1.1}
+  .msg{font-family:"Fraunces",Georgia,serif;font-style:italic;font-weight:300;font-size:1.12rem;
+       line-height:1.6;margin:0 0 1.6rem}
+  .msg span{opacity:0;display:inline-block;transform:translateY(6px)}
+  .slide.active .msg span{animation:word .5s ease forwards}
+  @keyframes word{to{opacity:1;transform:none}}
+
+  /* Juego del código */
+  .lock{width:64px;height:64px;margin-bottom:6px}
+  .lock .shackle{transform-box:view-box;transform-origin:44px 30px;transition:transform .5s cubic-bezier(.3,1.6,.5,1)}
+  .lock.open .shackle{transform:translateY(-6px) rotate(28deg)}
+  .code-title{font-family:"Fraunces",Georgia,serif;font-weight:500;font-size:1.3rem;margin:0 0 1.1rem;max-width:20ch;line-height:1.25}
+  .slots{display:flex;gap:12px;justify-content:center;margin-bottom:10px}
+  .slot{width:52px;height:60px;border-radius:16px;display:grid;place-items:center;
+        font-family:"Young Serif",Georgia,serif;font-size:1.7rem;color:var(--ink);
+        background:var(--key);box-shadow:inset 0 0 0 2px var(--card-line);transition:all .2s ease}
+  .slot.filled{box-shadow:inset 0 0 0 2px var(--accent);transform:translateY(-2px)}
+  .slots.bad .slot{box-shadow:inset 0 0 0 2px var(--bad);color:var(--bad)}
+  .slots.good .slot{box-shadow:inset 0 0 0 2px var(--good);color:var(--good)}
+  .code-msg{min-height:1.5em;margin:0 0 12px;font-size:.98rem;color:var(--muted)}
+  .code-msg.bad{color:var(--bad);font-weight:500}
+  .code-msg.good{color:var(--good);font-weight:500}
+  .keypad{display:grid;grid-template-columns:repeat(3,64px);gap:10px;justify-content:center}
+  .key{height:56px;border-radius:18px;border:0;background:var(--key);color:var(--ink);cursor:pointer;
+       font:500 1.35rem "Outfit",system-ui,sans-serif;transition:transform .12s ease,background .2s ease}
+  .key:active{transform:scale(.93);background:var(--accent);color:var(--accent-ink)}
+  .key:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+  .key.blank{visibility:hidden}
+
   /* ---------- Movimiento reducido ---------- */
   @media (prefers-reduced-motion: reduce){
     .stem{stroke-dashoffset:0;animation:none}
@@ -153,6 +217,9 @@
     .stage.show #t0 .shine::before,.ticket.sweep .shine::before{animation:none !important}
     .eye.hint::after,.eye.pop{animation:none}
     .actions{transition:none}
+    .modal,.card,.slide,.lock .shackle{transition:none}
+    .card.shake{animation:none}
+    .msg span{opacity:1;transform:none;animation:none !important}
   }
 </style>
 </head>
@@ -163,9 +230,10 @@
 <main>
   <!-- Pantalla inicial -->
   <section class="hero" id="hero">
+    <p class="love">Mi amor</p>
     <h1>Tengo algo para ti</h1>
     <p>Es algo que has soñado por mucho tiempo.</p>
-    <button class="btn reveal" id="revealBtn" type="button">Revelar mi sorpresa</button>
+    <button class="btn reveal" id="revealBtn" type="button">Ver mi sorpresa</button>
   </section>
 
   <!-- Regalos revelados -->
@@ -186,7 +254,7 @@
     </div>
 
     <div class="actions">
-      <div class="dots" aria-hidden="true"><span class="dot on"></span><span class="dot"></span></div>
+      <div class="dots" id="deckDots" aria-hidden="true"><span class="dot on"></span><span class="dot"></span></div>
       <div class="row">
         <button class="btn ghost" id="nextBtn" type="button">Ver otro regalo</button>
         <button class="btn" id="downloadBtn" type="button">Descargar boleta</button>
@@ -195,6 +263,46 @@
     </div>
   </section>
 </main>
+
+<!-- Modal: mensaje + juego del código -->
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle" aria-hidden="true">
+  <div class="card" id="card">
+    <svg class="corner tl" viewBox="0 0 100 100" aria-hidden="true"></svg>
+    <svg class="corner br" viewBox="0 0 100 100" aria-hidden="true"></svg>
+    <button class="close" id="closeModal" type="button" aria-label="Cerrar">&times;</button>
+    <div class="mdots" aria-hidden="true"><span class="mdot on"></span><span class="mdot"></span></div>
+
+    <div class="slides">
+      <!-- Slide 1: mensaje -->
+      <section class="slide active" id="slide0">
+        <h3 id="mTitle">Para ti, mi reina</h3>
+        <p class="msg" id="loveMsg"></p>
+        <button class="btn" id="nextSlide" type="button">Siguiente</button>
+      </section>
+
+      <!-- Slide 2: código -->
+      <section class="slide" id="slide1" aria-labelledby="codeTitle">
+        <svg class="lock" id="lock" viewBox="0 0 64 64" aria-hidden="true">
+          <path class="shackle" d="M20 30V20a12 12 0 0 1 24 0v10" fill="none" stroke="#5B83C7" stroke-width="5" stroke-linecap="round"/>
+          <rect x="11" y="28" width="42" height="30" rx="9" fill="#A9CBFF"/>
+          <path d="M32 50s-8-4.6-8-10a4.4 4.4 0 0 1 8-2.4 4.4 4.4 0 0 1 8 2.4c0 5.4-8 10-8 10z" fill="#F7C9D9"/>
+        </svg>
+        <h4 class="code-title" id="codeTitle">Código que solo la cumpleañera sabe</h4>
+        <div class="slots" id="slots" aria-hidden="true">
+          <span class="slot"></span><span class="slot"></span><span class="slot"></span><span class="slot"></span>
+        </div>
+        <p class="code-msg" id="codeMsg" role="status" aria-live="polite"></p>
+        <div class="keypad" id="keypad">
+          <button class="key" type="button">1</button><button class="key" type="button">2</button><button class="key" type="button">3</button>
+          <button class="key" type="button">4</button><button class="key" type="button">5</button><button class="key" type="button">6</button>
+          <button class="key" type="button">7</button><button class="key" type="button">8</button><button class="key" type="button">9</button>
+          <span class="key blank"></span><button class="key" type="button">0</button>
+          <button class="key" type="button" data-del aria-label="Borrar">&#9003;</button>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
 
 <script>
 /* ===================== Utilidades ===================== */
@@ -514,10 +622,8 @@ function burst(fromEl, count = 38) {
   }
 }
 
-document.getElementById("revealBtn").addEventListener("click", async e => {
-  const btn = e.currentTarget;
-  btn.disabled = true;
-  burst(btn);
+/* ===================== Mostrar los regalos (tras acertar el código) ===================== */
+async function showGifts() {
   await ticketReady;
   const hero = document.getElementById("hero");
   hero.classList.add("leaving");
@@ -526,11 +632,137 @@ document.getElementById("revealBtn").addEventListener("click", async e => {
     document.getElementById("stage").classList.add("show");
     window.scrollTo({ top: 0 });
   }, reduceMotion ? 0 : 480);
+}
+
+/* ===================== Modal con slides ===================== */
+const modal = document.getElementById("modal");
+const card = document.getElementById("card");
+const slides = [document.getElementById("slide0"), document.getElementById("slide1")];
+const mdots = document.querySelectorAll(".mdot");
+const revealBtn = document.getElementById("revealBtn");
+let slideIdx = 0;
+
+// Mensaje del slide 1, palabra por palabra
+const LOVE_MSG = "Antes de ver tu regalo, quiero decirte primero que todo que es un placer compartir otro año más de tu vida juntos. Te mereces lo mejor de este mundo, y que lo que hay en este regalo no es ni una cuarta parte de todo el amor que siento por ti. Que Dios te bendiga siempre. Te amo con todo mi ser, mi reina hermosa 💗";
+document.getElementById("loveMsg").innerHTML = LOVE_MSG.split(" ")
+  .map((w, i) => `<span style="animation-delay:${(.35 + i * .045).toFixed(2)}s">${w}</span>`).join(" ");
+
+// Flores decorativas en las esquinas de la tarjeta
+document.querySelectorAll(".corner").forEach(svg => {
+  [[30, 34, 22, "#A9CBFF", .3], [62, 22, 15, "#CDBDF2", 1], [24, 66, 13, "#F7C9D9", .6], [50, 50, 10, "#8DB8F2", .2]]
+    .forEach(([x, y, r, col, rot]) => {
+      const g = svgEl("g", { transform: `translate(${x} ${y}) rotate(${rot * 57})` });
+      for (let i = 0; i < 5; i++) g.appendChild(svgEl("ellipse", {
+        cx: 0, cy: -r * .55, rx: r * .42, ry: r * .58, fill: col, transform: `rotate(${i * 72})`
+      }));
+      g.appendChild(svgEl("circle", { cx: 0, cy: 0, r: r * .22, fill: "#FFE7A3" }));
+      svg.appendChild(g);
+    });
+});
+
+function setSlide(i) {
+  slides.forEach((s, k) => {
+    s.classList.toggle("active", k === i);
+    s.classList.toggle("gone", k < i);
+    s.inert = k !== i;
+  });
+  mdots.forEach((d, k) => d.classList.toggle("on", k === i));
+  slideIdx = i;
+}
+
+function openModal() {
+  setSlide(0);
+  resetCode();
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden", "false");
+  setTimeout(() => document.getElementById("nextSlide").focus(), 350);
+}
+function closeModal() {
+  modal.classList.remove("open");
+  modal.setAttribute("aria-hidden", "true");
+  revealBtn.disabled = false;
+  revealBtn.focus();
+}
+
+revealBtn.addEventListener("click", () => {
+  revealBtn.disabled = true;
+  burst(revealBtn, 24);
+  setTimeout(openModal, reduceMotion ? 0 : 250);
+});
+document.getElementById("nextSlide").addEventListener("click", () => setSlide(1));
+document.getElementById("closeModal").addEventListener("click", closeModal);
+modal.addEventListener("click", e => { if (e.target === modal) closeModal(); });
+
+/* ===================== Juego del código ===================== */
+const SECRET = "1114";
+const slotEls = document.querySelectorAll(".slot");
+const slotsBox = document.getElementById("slots");
+const codeMsg = document.getElementById("codeMsg");
+const lock = document.getElementById("lock");
+let code = "", locked = false;
+
+function renderSlots() {
+  slotEls.forEach((el, i) => {
+    el.textContent = code[i] || "";
+    el.classList.toggle("filled", i < code.length);
+  });
+}
+function resetCode() {
+  code = ""; locked = false;
+  slotsBox.classList.remove("bad", "good");
+  codeMsg.textContent = ""; codeMsg.className = "code-msg";
+  lock.classList.remove("open");
+  renderSlots();
+}
+function press(k) {
+  if (locked) return;
+  if (k === "del") { code = code.slice(0, -1); }
+  else if (code.length < 4) { code += k; }
+  slotsBox.classList.remove("bad");
+  if (codeMsg.classList.contains("bad")) { codeMsg.textContent = ""; codeMsg.className = "code-msg"; }
+  renderSlots();
+  if (code.length === 4) setTimeout(check, 180);
+}
+function check() {
+  if (code === SECRET) {
+    // Acierto: candado abierto, pétalos y pasa a los cupones
+    locked = true;
+    slotsBox.classList.add("good");
+    lock.classList.add("open");
+    codeMsg.textContent = "¡Correcto, mi reina!";
+    codeMsg.className = "code-msg good";
+    burst(lock, 40);
+    setTimeout(() => {
+      modal.classList.remove("open");
+      modal.setAttribute("aria-hidden", "true");
+      showGifts();
+    }, reduceMotion ? 600 : 1300);
+  } else {
+    // Error: tiembla y se limpia
+    locked = true;
+    slotsBox.classList.add("bad");
+    codeMsg.textContent = "Upsssss, intenta nuevamente mi amor";
+    codeMsg.className = "code-msg bad";
+    card.classList.remove("shake"); void card.offsetWidth; card.classList.add("shake");
+    setTimeout(() => { code = ""; locked = false; renderSlots(); slotsBox.classList.remove("bad"); }, 800);
+  }
+}
+document.getElementById("keypad").addEventListener("click", e => {
+  const b = e.target.closest("button.key");
+  if (b) press(b.hasAttribute("data-del") ? "del" : b.textContent.trim());
+});
+// Teclado físico (computador)
+document.addEventListener("keydown", e => {
+  if (!modal.classList.contains("open")) return;
+  if (e.key === "Escape") return closeModal();
+  if (slideIdx !== 1) return;
+  if (/^[0-9]$/.test(e.key)) press(e.key);
+  else if (e.key === "Backspace") press("del");
 });
 
 /* ===================== Cambiar de regalo ===================== */
 const tickets = [document.getElementById("t0"), document.getElementById("t1")];
-const dots = document.querySelectorAll(".dot");
+const dots = document.querySelectorAll("#deckDots .dot");
 const nextBtn = document.getElementById("nextBtn");
 const downloadBtn = document.getElementById("downloadBtn");
 const status = document.getElementById("status");
